@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Butterfly</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+    <style>
+        body {
+          font-family:'Open ', Thin ;
+          padding: 0;
+          margin: 0;
+          background-color: #fff;
+        }
+        h1.title{
+          margin-top:5px
+          font-size:80px;
+          text-align:center;
+          color:#000000;
+        }
+    </style>
+</head>
+
+<body>
+  <div>
+    <center>
+      <h1 class="title">
+        Butterfly
+      </h1>
+    </center>
+  </div>
+
+	<script>
+    var renderer = PIXI.autoDetectRenderer(1280, 800, { backgroundColor: 0xFFFFFF, antialias: true });
+    document.body.appendChild(renderer.view);
+    var stage = new PIXI.Container();
+    var graphics = new PIXI.Graphics();
+
+    stage.addChild(graphics);
+
+    var x = 50;
+    var y = 350;
+    var angle = 330;
+
+    var paddle_x = 50;
+    var paddle_y = 70;
+    var last_paddle_y = 0;
+
+    var dir = 0;
+    var up_dir = false;
+    var count = 0;
+
+    var bunny = PIXI.Sprite.fromImage('https://butterflyplace-ma.com/img/BlueMorpho.png')
+    stage.addChild(bunny)
+
+    var texture1 = PIXI.Texture.fromImage('butterfly1.jpg')
+    var texture2 = PIXI.Texture.fromImage('butterfly2.jpg')
+    var texture3 = PIXI.Texture.fromImage('bf3.jpg')
+    var texture4 = PIXI.Texture.fromImage('4.jpg')
+    var texture5 = PIXI.Texture.fromImage('5.jpg')
+    var texture6 = PIXI.Texture.fromImage('6.jpg')
+    var images_list = [texture1, texture2, texture3, texture4, texture5, texture6]
+
+    var image_index = 0
+    var direction=true
+    var interval = setInterval(changeImage, 200);
+
+
+    function changeImage(){
+      if(image_index == 5){
+        direction = false
+      }
+      else if (image_index == 0) {
+         direction = true
+      }
+
+      if(direction == true){
+        image_index += 1
+      }
+      else{
+        image_index -= 1
+      }
+      var next_texture = images_list[image_index]
+      bunny.texture = next_texture
+
+
+    }
+
+    function animate() {
+        if (bunny.position.y > 200){
+          if(up_dir == true){
+            paddle_y += 6
+            up_dir = false
+          }
+          else{
+            paddle_y -= 2
+          }
+        }
+        else if(bunny.position.y < 20){
+          if(up_dir == false){
+            paddle_y -= 2
+            up_dir = true
+          }
+          else{
+            paddle_y += 6
+          }
+        }
+        else{
+          if(up_dir == true){
+            paddle_y += 6
+          }
+          else{
+            paddle_y -= 2
+          }
+        }
+
+        bunny.position.x = paddle_x
+        bunny.position.y = paddle_y
+        paddle_x += dir;
+
+        renderer.render(stage);
+        requestAnimationFrame(animate);
+  }
+
+  function keyboard(keyCode) {
+		var key = {};
+		key.code = keyCode;
+		key.isDown = false;
+		key.isUp = true;
+		key.press = undefined;
+		key.release = undefined;
+		  //The `downHandler`
+		key.downHandler = function(event) {
+		    if (event.keyCode === key.code) {
+		    	if (key.isUp && key.press) key.press();
+		      		key.isDown = true;
+		      		key.isUp = false;
+		    	}
+		    event.preventDefault();
+		};
+
+		  //The `upHandler`
+		key.upHandler = function(event) {
+		    if (event.keyCode === key.code) {
+		      	if (key.isDown && key.release) key.release();
+		      		key.isDown = false;
+		      		key.isUp = true;
+		    	}
+		    event.preventDefault();
+		};
+
+		  //Attach event listeners
+		window.addEventListener(
+		    "keydown", key.downHandler.bind(key), false
+		);
+	  window.addEventListener(
+		    "keyup", key.upHandler.bind(key), false
+		);
+  		return key;
+}
+
+var aKey = keyboard(65);
+aKey.press = function() {
+	dir = -5;
+};
+aKey.release = function() {
+	dir = 0;
+};
+
+var dKey = keyboard(68);
+dKey.press = function() {
+	dir = 5;
+};
+dKey.release = function() {
+	dir = 0;
+};
+
+animate();
+  </script>
+</body>
+</html>
